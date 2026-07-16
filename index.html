@@ -187,32 +187,6 @@
     margin-bottom: 15px;
   }
 
-  .rsvp-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .form-input {
-    padding: 12px 14px;
-    border: 1.5px solid #ffb3c6;
-    border-radius: 20px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-    background: white;
-    color: #a5406e;
-  }
-
-  .form-input::placeholder {
-    color: #d1a5c6;
-  }
-
-  .form-input:focus {
-    outline: none;
-    border-color: #ff6f91;
-    box-shadow: 0 0 8px rgba(255,111,145,0.2);
-  }
-
   .rsvp-buttons {
     display: flex;
     flex-direction: column;
@@ -319,16 +293,10 @@
 
     <div class="rsvp">
       <div class="rsvp-title">Will you be joining us?</div>
-      <form id="rsvpForm" class="rsvp-form">
-        <input type="text" name="guest_name" class="form-input" placeholder="Your name" required>
-        <input type="email" name="guest_email" class="form-input" placeholder="Your email" required>
-        <input type="tel" name="guest_phone" class="form-input" placeholder="Your phone (optional)">
-        
-        <div class="rsvp-buttons">
-          <button type="submit" name="rsvp_response" value="yes" class="rsvp-btn yes">Yes, I'll be there 🎉</button>
-          <button type="submit" name="rsvp_response" value="no" class="rsvp-btn no">Sorry, can't make it</button>
-        </div>
-      </form>
+      <div class="rsvp-buttons">
+        <button class="rsvp-btn yes" onclick="handleRSVP('yes')">Yes, I'll be there 🎉</button>
+        <button class="rsvp-btn no" onclick="handleRSVP('no')">Sorry, can't make it</button>
+      </div>
       <div class="rsvp-response" id="rsvpResponse"></div>
     </div>
 
@@ -391,27 +359,25 @@
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  // Formspree RSVP Form Handler with IP Tracking
-  document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const formData = new FormData(this);
-    const formEntries = Object.fromEntries(formData);
-
-    // Get visitor IP and device info
+  // Handle RSVP with IP and Device Tracking
+  async function handleRSVP(answer) {
     try {
+      // Get visitor IP
       const ipInfo = await fetch('https://api.ipify.org?format=json')
         .then(res => res.json())
         .catch(() => ({ ip: 'Unknown' }));
 
+      // Get device info
       const deviceInfo = {
         userAgent: navigator.userAgent,
         language: navigator.language,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        platform: navigator.platform,
+        screenResolution: window.screen.width + 'x' + window.screen.height
       };
 
-      const fullData = {
-        ...formEntries,
+      const formData = {
+        rsvp_response: answer,
         ip_address: ipInfo.ip,
         device_info: JSON.stringify(deviceInfo),
         submission_time: new Date().toISOString()
@@ -421,7 +387,7 @@
       const response = await fetch('https://formspree.io/f/YOUR_FORMSPREE_ID', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(fullData)
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {
@@ -429,17 +395,25 @@
         buttons.forEach(b => b.disabled = true);
         const el = document.getElementById('rsvpResponse');
         
-        if (formEntries.rsvp_response === 'yes') {
+        if (answer === 'yes') {
           el.textContent = "Yay! We can't wait to celebrate with you 💕";
         } else {
           el.textContent = "We'll miss you, thank you for letting us know 🌷";
         }
       }
     } catch (error) {
-      console.error('Form submission error:', error);
-      document.getElementById('rsvpResponse').textContent = 'Thank you for responding! We received your RSVP.';
+      console.error('RSVP submission error:', error);
+      const el = document.getElementById('rsvpResponse');
+      const buttons = document.querySelectorAll('.rsvp-btn');
+      buttons.forEach(b => b.disabled = true);
+      
+      if (answer === 'yes') {
+        el.textContent = "Yay! We can't wait to celebrate with you 💕";
+      } else {
+        el.textContent = "We'll miss you, thank you for letting us know 🌷";
+      }
     }
-  });
+  }
 </script>
 
 </body>
