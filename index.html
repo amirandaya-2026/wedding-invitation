@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amir & Aya - Wedding Invitation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(160deg, #fff5e6 0%, #ffe8f0 40%, #fff0e0 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(5deg); }
+  }
+
+  .petal {
+    position: fixed;
+    top: -5%;
+    font-size: 22px;
+    animation: fall linear infinite;
+    z-index: 5;
+    opacity: 0.9;
+  }
+  @keyframes fall {
+    0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 0.9;}
+    100% { transform: translateY(110vh) rotate(360deg) translateX(30px); opacity: 0.3;}
+  }
+
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .card {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(6px);
+    border-radius: 28px;
+    padding: 40px 25px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(255,120,150,0.25);
+    border: 2px solid rgba(255,200,220,0.6);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .top-flowers {
+    font-size: 40px;
+    margin-bottom: 5px;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .invite-label {
+    color: #e0669a;
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .names {
+    font-family: 'Great Vibes', cursive;
+    font-size: 62px;
+    font-weight: 400;
+    background: linear-gradient(90deg, #ff6f91, #ff9a56, #ffd166);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1.3;
+    margin: 10px 0;
+  }
+
+  .and {
+    font-size: 30px;
+    color: #ff9a56;
+    display: block;
+    margin: 2px 0;
+  }
+
+  .subtitle {
+    color: #b5507a;
+    font-size: 16px;
+    margin: 15px 0 25px;
+    font-weight: 300;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+    color: #ffb347;
+    font-size: 20px;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    height: 1px;
+    width: 60px;
+    background: linear-gradient(90deg, transparent, #ffb3c6, transparent);
+  }
+
+  .details {
+    background: linear-gradient(135deg, #fff0f5, #fff8e8);
+    border-radius: 20px;
+    padding: 25px 20px;
+    margin: 20px 0;
+    border: 1px dashed #ffb3c6;
+  }
+
+  .detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 12px 0;
+    color: #a5406e;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .detail-icon { font-size: 22px; }
+
+  .hall-name {
+    font-family: 'Great Vibes', cursive;
+    font-size: 28px;
+    color: #ff6f91;
+    font-weight: 400;
+  }
+
+  .countdown {
+    margin: 30px 0 20px;
+  }
+  .countdown-title {
+    color: #d1477a;
+    font-size: 14px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .countdown-grid {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  .time-box {
+    background: linear-gradient(135deg, #ff9a56, #ff6f91);
+    color: white;
+    border-radius: 16px;
+    padding: 14px 10px;
+    min-width: 62px;
+    box-shadow: 0 8px 18px rgba(255,111,145,0.35);
+  }
+  .time-num {
+    font-size: 24px;
+    font-weight: 700;
+    display: block;
+  }
+  .time-label {
+    font-size: 10px;
+    opacity: 0.9;
+    letter-spacing: 0.5px;
+  }
+
+  .rsvp {
+    margin-top: 28px;
+    background: linear-gradient(135deg, #fff0f5, #fff8e8);
+    border-radius: 20px;
+    padding: 20px 18px;
+    border: 1px dashed #ffb3c6;
+  }
+  .rsvp-title {
+    color: #d1477a;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+
+  .rsvp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .form-input {
+    padding: 12px 14px;
+    border: 1.5px solid #ffb3c6;
+    border-radius: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    background: white;
+    color: #a5406e;
+  }
+
+  .form-input::placeholder {
+    color: #d1a5c6;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: #ff6f91;
+    box-shadow: 0 0 8px rgba(255,111,145,0.2);
+  }
+
+  .rsvp-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rsvp-btn {
+    border: none;
+    padding: 12px 16px;
+    border-radius: 30px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .rsvp-btn:active:not(:disabled) { transform: scale(0.96); }
+  .rsvp-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .rsvp-btn.yes {
+    background: linear-gradient(135deg, #ff9a56, #ff6f91);
+    color: white;
+    box-shadow: 0 8px 18px rgba(255,111,145,0.35);
+  }
+  .rsvp-btn.no {
+    background: white;
+    color: #b5507a;
+    border: 1.5px solid #ffb3c6;
+  }
+  .rsvp-response {
+    margin-top: 14px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ff6f91;
+    min-height: 20px;
+  }
+
+  .map-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 25px;
+    background: linear-gradient(135deg, #ffd166, #ff9a56);
+    color: white;
+    text-decoration: none;
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 10px 25px rgba(255,154,86,0.4);
+    transition: transform 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .map-btn:active { transform: scale(0.96); }
+
+  .footer-note {
+    margin-top: 25px;
+    color: #cc7aa0;
+    font-size: 13px;
+    font-style: italic;
+  }
+
+  .corner-deco {
+    position: absolute;
+    font-size: 60px;
+    opacity: 0.35;
+    z-index: 0;
+  }
+  .corner-tl { top: -15px; left: -15px; }
+  .corner-br { bottom: -15px; right: -15px; transform: rotate(180deg); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card">
+    <div class="corner-deco corner-tl">🌸</div>
+    <div class="corner-deco corner-br">🌸</div>
+
+    <div class="top-flowers">🌷 🌷 🌷</div>
+    <div class="invite-label">You're Invited</div>
+    <div class="names">
+      Amir <span class="and">&amp;</span> Aya
+    </div>
+    <div class="subtitle">Together with their families, request the pleasure of your company</div>
+
+    <div class="divider">✿</div>
+
+    <div class="details">
+      <div class="detail-row">
+        <span class="detail-icon">📅</span>
+        <span>Friday, July 31, 2026</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">💐</span>
+        <span class="hall-name">Hayat Hall</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">🕗</span>
+        <span>8:00 PM</span>
+      </div>
+    </div>
+
+    <div class="rsvp">
+      <div class="rsvp-title">Will you be joining us?</div>
+      <form id="rsvpForm" class="rsvp-form">
+        <input type="text" name="guest_name" class="form-input" placeholder="Your name" required>
+        <input type="email" name="guest_email" class="form-input" placeholder="Your email" required>
+        <input type="tel" name="guest_phone" class="form-input" placeholder="Your phone (optional)">
+        
+        <div class="rsvp-buttons">
+          <button type="submit" name="rsvp_response" value="yes" class="rsvp-btn yes">Yes, I'll be there 🎉</button>
+          <button type="submit" name="rsvp_response" value="no" class="rsvp-btn no">Sorry, can't make it</button>
+        </div>
+      </form>
+      <div class="rsvp-response" id="rsvpResponse"></div>
+    </div>
+
+    <div class="countdown">
+      <div class="countdown-title">COUNTING DOWN TO OUR BIG DAY 🎉</div>
+      <div class="countdown-grid" id="countdown">
+        <div class="time-box"><span class="time-num" id="days">--</span><span class="time-label">DAYS</span></div>
+        <div class="time-box"><span class="time-num" id="hours">--</span><span class="time-label">HRS</span></div>
+        <div class="time-box"><span class="time-num" id="minutes">--</span><span class="time-label">MIN</span></div>
+        <div class="time-box"><span class="time-num" id="seconds">--</span><span class="time-label">SEC</span></div>
+      </div>
+    </div>
+
+    <a class="map-btn" href="https://maps.app.goo.gl/zXZ5jLLDUQUhot2A8" target="_blank" rel="noopener">
+      📍 View Location
+    </a>
+
+    <div class="footer-note">Your presence is the greatest gift of all ✦</div>
+  </div>
+</div>
+
+<script>
+  // Falling flower petals
+  const petals = ['🌸','🌺','🌹','🌷','💮'];
+  const petalContainer = document.body;
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petals[Math.floor(Math.random()*petals.length)];
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.animationDuration = (6 + Math.random()*6) + 's';
+    p.style.animationDelay = (Math.random()*8) + 's';
+    p.style.fontSize = (16 + Math.random()*14) + 'px';
+    petalContainer.appendChild(p);
+  }
+
+  // Countdown to 31 July 2026
+  const targetDate = new Date('2026-07-31T20:00:00+02:00').getTime();
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+      document.getElementById('countdown').innerHTML = '<div style="font-size:18px;color:#ff6f91;font-weight:700;">Today is the day! 🎊</div>';
+      return;
+    }
+
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+    const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+    const seconds = Math.floor((diff % (1000*60)) / 1000);
+
+    document.getElementById('days').textContent = days;
+    document.getElementById('hours').textContent = hours;
+    document.getElementById('minutes').textContent = minutes;
+    document.getElementById('seconds').textContent = seconds;
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // Formspree RSVP Form Handler with IP Tracking
+  document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const formEntries = Object.fromEntries(formData);
+
+    // Get visitor IP and device info
+    try {
+      const ipInfo = await fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .catch(() => ({ ip: 'Unknown' }));
+
+      const deviceInfo = {
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      };
+
+      const fullData = {
+        ...formEntries,
+        ip_address: ipInfo.ip,
+        device_info: JSON.stringify(deviceInfo),
+        submission_time: new Date().toISOString()
+      };
+
+      // Send to Formspree
+      const response = await fetch('https://formspree.io/f/YOUR_FORMSPREE_ID', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fullData)
+      });
+
+      if (response.ok) {
+        const buttons = document.querySelectorAll('.rsvp-btn');
+        buttons.forEach(b => b.disabled = true);
+        const el = document.getElementById('rsvpResponse');
+        
+        if (formEntries.rsvp_response === 'yes') {
+          el.textContent = "Yay! We can't wait to celebrate with you 💕";
+        } else {
+          el.textContent = "We'll miss you, thank you for letting us know 🌷";
+        }
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      document.getElementById('rsvpResponse').textContent = 'Thank you for responding! We received your RSVP.';
+    }
+  });
+</script>
+
+</body>
+</html>
