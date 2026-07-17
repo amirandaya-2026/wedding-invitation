@@ -319,6 +319,40 @@
 </div>
 
 <script>
+  // Track page visit to Google Sheets
+  async function trackPageVisit() {
+    try {
+      const ipInfo = await fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .catch(() => ({ ip: 'Unknown' }));
+
+      const deviceInfo = {
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        platform: navigator.platform,
+        screenResolution: window.screen.width + 'x' + window.screen.height
+      };
+
+      const visitData = {
+        timestamp: new Date().toISOString(),
+        action: 'Page Opened',
+        ip_address: ipInfo.ip,
+        device_info: JSON.stringify(deviceInfo),
+        rsvp_response: 'Opened Link',
+        submission_time: new Date().toLocaleString()
+      };
+
+      // Send to Google Sheets via Apps Script
+      fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
+        method: 'POST',
+        body: JSON.stringify(visitData)
+      }).catch(e => console.log('Visit tracked'));
+    } catch (error) {
+      console.error('Error tracking visit:', error);
+    }
+  }
+
   // Falling flower petals
   const petals = ['🌸','🌺','🌹','🌷','💮'];
   const petalContainer = document.body;
@@ -362,12 +396,10 @@
   // Handle RSVP with IP and Device Tracking
   async function handleRSVP(answer) {
     try {
-      // Get visitor IP
       const ipInfo = await fetch('https://api.ipify.org?format=json')
         .then(res => res.json())
         .catch(() => ({ ip: 'Unknown' }));
 
-      // Get device info
       const deviceInfo = {
         userAgent: navigator.userAgent,
         language: navigator.language,
@@ -377,20 +409,27 @@
       };
 
       const formData = {
-        rsvp_response: answer,
+        timestamp: new Date().toISOString(),
+        rsvp_response: answer === 'yes' ? 'Yes' : 'No',
         ip_address: ipInfo.ip,
         device_info: JSON.stringify(deviceInfo),
-        submission_time: new Date().toISOString()
+        submission_time: new Date().toLocaleString()
       };
 
       // Send to Formspree
-      const response = await fetch('https://formspree.io/f/mgogaoyo', {
+      const formspreeResponse = await fetch('https://formspree.io/f/mgogaoyo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
 
-      if (response.ok) {
+      // Send to Google Sheets via Apps Script
+      fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
+        method: 'POST',
+        body: JSON.stringify(formData)
+      }).catch(e => console.log('Data synced'));
+
+      if (formspreeResponse.ok) {
         const buttons = document.querySelectorAll('.rsvp-btn');
         buttons.forEach(b => b.disabled = true);
         const el = document.getElementById('rsvpResponse');
@@ -414,6 +453,9 @@
       }
     }
   }
+
+  // Track page visit on load
+  window.addEventListener('load', trackPageVisit);
 </script>
 
 </body>
