@@ -458,5 +458,31 @@
   window.addEventListener('load', trackPageVisit);
 </script>
 
+<script>
+(function () {
+  var SHEET_API_URL = "https://script.google.com/macros/s/AKfycbzaq0A9MyZdqqfrR5tL4Ssc6WMKoaHomAC9H6y7M_y0nHbnH3Mojdt-IGqOjqEyZ7r2/exec";
+
+  var params = new URLSearchParams(window.location.search);
+  var guestId = params.get('id');
+
+  function ping(action) {
+    if (!guestId) return;
+    fetch(SHEET_API_URL + "?id=" + encodeURIComponent(guestId) + "&action=" + action, { mode: 'no-cors' })
+      .catch(function () {});
+  }
+
+  ping('open');
+
+  document.querySelectorAll('button, a').forEach(function (el) {
+    var text = el.textContent.trim();
+    if (text.indexOf("I'll be there") !== -1) {
+      el.addEventListener('click', function () { ping('yes'); }, true);
+    } else if (text.indexOf("can't make it") !== -1) {
+      el.addEventListener('click', function () { ping('no'); }, true);
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
