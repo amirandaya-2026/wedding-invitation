@@ -319,38 +319,84 @@
 </div>
 
 <script>
-  // Track page visit to Google Sheets
+  // Generate unique device ID
+  function getDeviceFingerprint() {
+    const screenResolution = window.screen.width + 'x' + window.screen.height;
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const language = navigator.language;
+    const platform = navigator.platform;
+    const userAgent = navigator.userAgent;
+    
+    // Create a simple hash from device info
+    const fingerprint = btoa(screenResolution + timezone + platform).substring(0, 12);
+    return fingerprint;
+  }
+
+  // Get geolocation info
+  async function getGeoLocation(ip) {
+    try {
+      const geoResponse = await fetch(`https://ip-api.com/json/${ip}?fields=country,city,region,timezone`)
+        .then(res => res.json())
+        .catch(() => ({ country: 'Unknown', city: 'Unknown', region: 'Unknown' }));
+      return geoResponse;
+    } catch (error) {
+      return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
+    }
+  }
+
+  // Track page visit (link opened)
   async function trackPageVisit() {
     try {
       const ipInfo = await fetch('https://api.ipify.org?format=json')
         .then(res => res.json())
         .catch(() => ({ ip: 'Unknown' }));
 
+      const geoInfo = await getGeoLocation(ipInfo.ip);
+
+      const deviceFingerprint = getDeviceFingerprint();
+      
       const deviceInfo = {
+        deviceId: deviceFingerprint,
         userAgent: navigator.userAgent,
+        platform: navigator.platform,
         language: navigator.language,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        platform: navigator.platform,
-        screenResolution: window.screen.width + 'x' + window.screen.height
+        screenResolution: window.screen.width + 'x' + window.screen.height,
+        browserName: getBrowserName()
       };
 
       const visitData = {
-        timestamp: new Date().toISOString(),
-        action: 'Page Opened',
+        action: 'Link Opened',
         ip_address: ipInfo.ip,
+        device_id: deviceFingerprint,
+        country: geoInfo.country || 'Unknown',
+        city: geoInfo.city || 'Unknown',
+        region: geoInfo.region || 'Unknown',
         device_info: JSON.stringify(deviceInfo),
-        rsvp_response: 'Opened Link',
-        submission_time: new Date().toLocaleString()
+        rsvp_response: 'Opened',
+        timestamp: new Date().toISOString(),
+        submission_time: new Date().toLocaleString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
       };
 
-      // Send to Google Sheets via Apps Script
-      fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
+      // Send to Formspree
+      fetch('https://formspree.io/f/mgogaoyo', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(visitData)
       }).catch(e => console.log('Visit tracked'));
     } catch (error) {
       console.error('Error tracking visit:', error);
     }
+  }
+
+  function getBrowserName() {
+    const ua = navigator.userAgent;
+    if (ua.indexOf('Firefox') > -1) return 'Firefox';
+    if (ua.indexOf('Chrome') > -1) return 'Chrome';
+    if (ua.indexOf('Safari') > -1) return 'Safari';
+    if (ua.indexOf('Edge') > -1) return 'Edge';
+    if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) return 'Opera';
+    return 'Unknown';
   }
 
   // Falling flower petals
@@ -393,27 +439,37 @@
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
-  // Handle RSVP with IP and Device Tracking
+  // Handle RSVP with detailed tracking
   async function handleRSVP(answer) {
     try {
       const ipInfo = await fetch('https://api.ipify.org?format=json')
         .then(res => res.json())
         .catch(() => ({ ip: 'Unknown' }));
 
+      const geoInfo = await getGeoLocation(ipInfo.ip);
+      const deviceFingerprint = getDeviceFingerprint();
+
       const deviceInfo = {
+        deviceId: deviceFingerprint,
         userAgent: navigator.userAgent,
+        platform: navigator.platform,
         language: navigator.language,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        platform: navigator.platform,
-        screenResolution: window.screen.width + 'x' + window.screen.height
+        screenResolution: window.screen.width + 'x' + window.screen.height,
+        browserName: getBrowserName()
       };
 
       const formData = {
-        timestamp: new Date().toISOString(),
+        action: answer === 'yes' ? 'RSVP - Yes' : 'RSVP - No',
         rsvp_response: answer === 'yes' ? 'Yes' : 'No',
         ip_address: ipInfo.ip,
+        device_id: deviceFingerprint,
+        country: geoInfo.country || 'Unknown',
+        city: geoInfo.city || 'Unknown',
+        region: geoInfo.region || 'Unknown',
         device_info: JSON.stringify(deviceInfo),
-        submission_time: new Date().toLocaleString()
+        timestamp: new Date().toISOString(),
+        submission_time: new Date().toLocaleString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
       };
 
       // Send to Formspree
@@ -422,12 +478,6 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
-
-      // Send to Google Sheets via Apps Script
-      fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
-        method: 'POST',
-        body: JSON.stringify(formData)
-      }).catch(e => console.log('Data synced'));
 
       if (formspreeResponse.ok) {
         const buttons = document.querySelectorAll('.rsvp-btn');
