@@ -325,22 +325,30 @@
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const language = navigator.language;
     const platform = navigator.platform;
-    const userAgent = navigator.userAgent;
     
-    // Create a simple hash from device info
     const fingerprint = btoa(screenResolution + timezone + platform).substring(0, 12);
     return fingerprint;
+  }
+
+  function getBrowserName() {
+    const ua = navigator.userAgent;
+    if (ua.indexOf('Firefox') > -1) return 'Firefox';
+    if (ua.indexOf('Chrome') > -1) return 'Chrome';
+    if (ua.indexOf('Safari') > -1) return 'Safari';
+    if (ua.indexOf('Edge') > -1) return 'Edge';
+    if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) return 'Opera';
+    return 'Unknown';
   }
 
   // Get geolocation info
   async function getGeoLocation(ip) {
     try {
-      const geoResponse = await fetch(`https://ip-api.com/json/${ip}?fields=country,city,region,timezone`)
+      const geoResponse = await fetch(`https://ipapi.co/json/`)
         .then(res => res.json())
-        .catch(() => ({ country: 'Unknown', city: 'Unknown', region: 'Unknown' }));
+        .catch(() => ({ country_name: 'Unknown', city: 'Unknown', region: 'Unknown', ip: ip }));
       return geoResponse;
     } catch (error) {
-      return { country: 'Unknown', city: 'Unknown', region: 'Unknown' };
+      return { country_name: 'Unknown', city: 'Unknown', region: 'Unknown', ip: ip };
     }
   }
 
@@ -352,51 +360,32 @@
         .catch(() => ({ ip: 'Unknown' }));
 
       const geoInfo = await getGeoLocation(ipInfo.ip);
-
       const deviceFingerprint = getDeviceFingerprint();
-      
-      const deviceInfo = {
-        deviceId: deviceFingerprint,
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        screenResolution: window.screen.width + 'x' + window.screen.height,
-        browserName: getBrowserName()
-      };
 
-      const visitData = {
-        action: 'Link Opened',
-        ip_address: ipInfo.ip,
-        device_id: deviceFingerprint,
-        country: geoInfo.country || 'Unknown',
-        city: geoInfo.city || 'Unknown',
-        region: geoInfo.region || 'Unknown',
-        device_info: JSON.stringify(deviceInfo),
-        rsvp_response: 'Opened',
-        timestamp: new Date().toISOString(),
-        submission_time: new Date().toLocaleString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      const trackingData = {
+        Action: 'Link Opened',
+        'IP Address': ipInfo.ip,
+        'Device ID': deviceFingerprint,
+        Country: geoInfo.country_name || 'Unknown',
+        City: geoInfo.city || 'Unknown',
+        Region: geoInfo.region || 'Unknown',
+        Browser: getBrowserName(),
+        'Screen Resolution': window.screen.width + 'x' + window.screen.height,
+        Platform: navigator.platform,
+        Language: navigator.language,
+        Timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        Timestamp: new Date().toLocaleString()
       };
 
       // Send to Formspree
       fetch('https://formspree.io/f/mgogaoyo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(visitData)
+        body: JSON.stringify(trackingData)
       }).catch(e => console.log('Visit tracked'));
     } catch (error) {
       console.error('Error tracking visit:', error);
     }
-  }
-
-  function getBrowserName() {
-    const ua = navigator.userAgent;
-    if (ua.indexOf('Firefox') > -1) return 'Firefox';
-    if (ua.indexOf('Chrome') > -1) return 'Chrome';
-    if (ua.indexOf('Safari') > -1) return 'Safari';
-    if (ua.indexOf('Edge') > -1) return 'Edge';
-    if (ua.indexOf('Opera') > -1 || ua.indexOf('OPR') > -1) return 'Opera';
-    return 'Unknown';
   }
 
   // Falling flower petals
@@ -449,34 +438,27 @@
       const geoInfo = await getGeoLocation(ipInfo.ip);
       const deviceFingerprint = getDeviceFingerprint();
 
-      const deviceInfo = {
-        deviceId: deviceFingerprint,
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        language: navigator.language,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        screenResolution: window.screen.width + 'x' + window.screen.height,
-        browserName: getBrowserName()
-      };
-
-      const formData = {
-        action: answer === 'yes' ? 'RSVP - Yes' : 'RSVP - No',
-        rsvp_response: answer === 'yes' ? 'Yes' : 'No',
-        ip_address: ipInfo.ip,
-        device_id: deviceFingerprint,
-        country: geoInfo.country || 'Unknown',
-        city: geoInfo.city || 'Unknown',
-        region: geoInfo.region || 'Unknown',
-        device_info: JSON.stringify(deviceInfo),
-        timestamp: new Date().toISOString(),
-        submission_time: new Date().toLocaleString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      const rsvpData = {
+        Action: answer === 'yes' ? 'RSVP - Yes' : 'RSVP - No',
+        'RSVP Response': answer === 'yes' ? 'Yes ✅' : 'No ❌',
+        'IP Address': ipInfo.ip,
+        'Device ID': deviceFingerprint,
+        Country: geoInfo.country_name || 'Unknown',
+        City: geoInfo.city || 'Unknown',
+        Region: geoInfo.region || 'Unknown',
+        Browser: getBrowserName(),
+        'Screen Resolution': window.screen.width + 'x' + window.screen.height,
+        Platform: navigator.platform,
+        Language: navigator.language,
+        Timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        Timestamp: new Date().toLocaleString()
       };
 
       // Send to Formspree
       const formspreeResponse = await fetch('https://formspree.io/f/mgogaoyo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(rsvpData)
       });
 
       if (formspreeResponse.ok) {
